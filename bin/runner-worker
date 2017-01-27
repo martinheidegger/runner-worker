@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+const path = require('path')
+const { fork } = require('child_process')
+
+if (process.argv[2] === 'runner') {
+  fork(path.join(__dirname, 'runner-worker-runner'), process.argv.slice(3))
+} else if (process.argv[2] === 'worker') {
+  fork(path.join(__dirname, 'runner-worker-worker'), process.argv.slice(3))
+} else {
+  console.error('Use "runner" or "worker" as first argument')
+  process.exit(1)
+}
+

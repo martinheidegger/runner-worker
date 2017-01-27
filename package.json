@@ -1,8 +1,13 @@
 {
-  "name": "worker",
+  "name": "runner-worker",
   "version": "0.1.3",
   "description": "",
   "main": "worker.js",
+  "bin": {
+    "runner-worker": "./bin/runner-worker",
+    "runner-worker-runner": "./bin/runner-worker-runner",
+    "runner-worker-worker": "./bin/runner-worker-worker"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

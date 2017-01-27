@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 // Firebase Javascript Client
 var readline = require('readline')
 var Firebase = require('firebase')
 
 if (process.argv.length < 3) {
-  console.log("usage: node runner.js <firebaseUrl> [env1=val1, env2=val2, ...]")
+  console.log("usage: runner-worker-runner <firebaseUrl> [env1=val1, env2=val2, ...]")
   console.log("  For authentication, set FIREBASE_TOKEN environment variable.")
   process.exit()
 }
