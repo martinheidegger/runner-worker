@@ -9,22 +9,26 @@ runner-worker
 
 ## Example
 
-Start a worker.
+Install it:
 
 ```
-$ (cd worker && npm install)
-$ node worker/worker.js https://runner-worker.firebaseio-demo.com/queue printenv hello
+$ npm i runner-worker -g
+```
+
+Start a worker:
+
+```
+$ runner-worker worker https://runner-worker.firebaseio-demo.com/queue printenv hello
 WORKER: waiting a runner pushed a task...
 # you may see some warning about index...
 ```
 
 You can see your worker's presence on https://runner-worker.firebaseio-demo.com/queue.
 
-Then, start a runner.
+Start a runner:
 
 ```
-$ (cd runner && npm install)
-$ node runner/runner.js https://runner-worker.firebaseio-demo.com/queue hello=world
+$ runner-worker runner https://runner-worker.firebaseio-demo.com/queue hello=world
 RUNNER: task pushed: env: {"hello":"world"}
 RUNNER: waitning a worker process the task...
 WORKER: start command: printenv,hello
