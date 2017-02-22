@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var os = require('os')
-var { spawn } = require('child_process')
+var spawn = require('child_process').spawn
 var Queue = require('firebase-queue')
 var Firebase = require('firebase')
 

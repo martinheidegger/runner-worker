@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const path = require('path')
-const { fork } = require('child_process')
+const fork = require('child_process').fork
 
 if (process.argv[2] === 'runner') {
   fork(path.join(__dirname, 'runner-worker-runner'), process.argv.slice(3))
