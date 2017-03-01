@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const toString = require('stream-to-string')
+console.log('---argv')
+console.log(JSON.stringify(process.argv))
+console.log('---env')
+console.log(JSON.stringify(process.env))
+console.log('---err')
+process.stderr.write(JSON.stringify('Test error output') + '\n')
+console.log('---stream')
+toString(process.stdin, function (err, data) {
+  console.log('---stream-err')
+  console.log(JSON.stringify(err))
+  console.log('---stream-data')
+  console.log(JSON.stringify(data))
+  console.log('---exit')
+  process.exit(13)
+})

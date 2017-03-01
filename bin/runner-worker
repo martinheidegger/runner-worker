@@ -1,13 +1,38 @@
 #!/usr/bin/env node
-const path = require('path')
-const fork = require('child_process').fork
 
-if (process.argv[2] === 'runner') {
-  fork(path.join(__dirname, 'runner-worker-runner'), process.argv.slice(3))
-} else if (process.argv[2] === 'worker') {
-  fork(path.join(__dirname, 'runner-worker-worker'), process.argv.slice(3))
-} else {
-  console.error('Use "runner" or "worker" as first argument')
-  process.exit(1)
+function log (type, level) {
+  var prefix = '[' + type
+  var suffix = '] (' + level + ')'
+  return function (id, message) {
+    if (id) {
+      return prefix + '#' + id + suffix + message
+    }
+    return prefix + suffix + message
+  }
 }
 
+require('../lib/runner-worker.js')(process.argv.slice(2), {
+  stdio: 'pipe'
+}, function (err, proc) {
+  if (err) {
+    console.error(e.stack || e)
+    process.exit(1)
+  }
+  if (process.env.DEBUG) {
+    proc.on('debug', log(proc.type, 'debug'))
+  }
+  proc.on('info', log(proc.type, 'info'))
+  if (proc.stdout) {
+    proc.stdout.pipe(process.stdout)
+  }
+  if (proc.stderr) {
+    proc.stderr.pipe(process.stderr)
+  }
+  if (proc.stdin) {
+    process.stdin.pipe(proc.stdin)
+  }
+  proc.on('exit', function (code) {
+    process.exit(code)
+  })
+
+})
