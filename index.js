@@ -2,9 +2,9 @@
 module.exports = function (command, options, argv, cb) {
   var cmd
   if (command === 'runner') {
-    cmd = require('./runner')
+    cmd = require('./lib/runner')
   } else if (command === 'worker') {
-    cmd = require('./worker')
+    cmd = require('./lib/worker')
   }
   if (!cmd) {
     return cb(new Error('Unknown command'))
@@ -12,7 +12,7 @@ module.exports = function (command, options, argv, cb) {
   if (!options) {
     options = {}
   }
-  require('./auth')(options, function (err, db) {
+  require('./lib/auth')(options, function (err, db) {
     if (err) {
       return cb(err)
     }
