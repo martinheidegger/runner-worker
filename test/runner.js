@@ -1,8 +1,8 @@
+'use strict'
 const tap = require('tap')
 const test = tap.test
 const tearDown = tap.tearDown
 const runner = require('../lib/runner')
-const firebase = require('firebase')
 const stream = require('firebase-stream')
 const toStream = require('string-to-stream')
 const toString = require('stream-to-string')
@@ -16,9 +16,8 @@ test('Test a simple run', function (t) {
   const instance = runner({
     root: ref,
     stdio: 'ignore',
-    env: {x: 1},
-    argv: ['a', 'b']
-  })
+    env: {x: 1}
+  }, ['a', 'b'])
   t.notEquals(instance.url, null, 'instance url is set')
   const node = db2.refFromURL(instance.url)
   t.tearDown(function () {

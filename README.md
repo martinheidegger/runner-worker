@@ -1,55 +1,94 @@
-runner-worker
-=============
+# 🏃‍ runner-worker 🕴
 
-- A runner pushs a task with pairs of env to a queue.
-- A worker pops the task and execute a command, specified at start time, with the env.
-- A runner and a worker can be anywhare with internet connection.
-- Implemented with node.js as a simple wrapper of [Firebase Queue](https://github.com/firebase/firebase-queue).
+`runner-worker` allows to create a tasks-queue stored in [firebase](https://firebase.google.com/)
+and process those tasks with workers.
 
+## 💡 What is it good for?
 
-## Example
+- Hosted CI systems
+- Remote Task execution
+- Systems where SSH is problematic (pure https transport)
 
-Install it:
-
-```
-$ npm i runner-worker -g
-```
-
-Start a worker:
+## 🚄 Installation
 
 ```
-$ runner-worker worker https://runner-worker.firebaseio-demo.com/queue printenv hello
-WORKER: waiting a runner pushed a task...
-# you may see some warning about index...
+$ npm install runner-worker --global
 ```
 
-You can see your worker's presence on https://runner-worker.firebaseio-demo.com/queue.
+## 💪 Usage
 
-Start a runner:
+_Note: Before you start this example: setup a firebase database with an admin token_
+
+Start a worker for a queue on firebase:
 
 ```
-$ runner-worker runner https://runner-worker.firebaseio-demo.com/queue hello=world
-RUNNER: task pushed: env: {"hello":"world"}
-RUNNER: waitning a worker process the task...
-WORKER: start command: printenv,hello
-
-world
-
-WORKER: command completed.
+$ export FIREBASE_URL=https://<my-domain>.firebase.io \
+         FIREBASE_NAMESPACE=tasks \
+         FIREBASE_TOKEN=<my-processor-token> \
+  runner-worker process-tasks -- /bin/bash -c "\"echo Executed with args: \$@\""
 ```
 
-Back to the terminal which the worker is running. You will see same output of runner.
+Create a task in the firebase queue:
 
+```
+$ export FIREBASE_URL=https://<my-domain>.firebase.io \
+         FIREBASE_NAMESPACE=tasks \
+         FIREBASE_TOKEN=<my-requester-token> \
+  runner-worker create-task -- arg1=a arg2=b
+```
 
-## What is it good for?
+The tasks are stored in the `tasks` sub-object while workers are registered in the `workers`
+sub object. [https://<my-domain>.firebase.io/tasks](https://<my-domain>.firebase.io/tasks).
 
-- E.g. Workers on Mac or Windows host in a LAN. Runner on a hosted CI
+## Extended usage
 
+Use `runner-worker --help` or `runner-worker <command> --help` to get more
+information about the available options
 
-## Security
+```
+$ runner-worker --help
+runner-worker <command>
 
-- See [Firebase queue security](https://github.com/firebase/firebase-queue#queue-security)
+Commands:
+  create-task    Creates a new task for a worker to process.
+  process-tasks  Process tasks
 
-## Caveates
+Options:
+  --env, -e                        Environment variable passed to the worker.
+                                                                         [array]
+  --dbUrl, -d, --db, -u, --url     Firebase url that is used to store & process
+                                   tasks. You can also specify the environment
+                                   variable FIREBASE_URL.    [string] [required]
+  --namespace, --ns, --prefix, -p  Namespace where to process and execute tasks
+                                   in firebase. You can also specify the
+                                   environment variable FIREBASE_NAMESPACE.
+                                                                        [string]
+  --auth-token, -t, --token        Token used to authenticate to the database.
+                                   You can also specify the environment variable
+                                   FIREBASE_TOKEN.                      [string]
+  --help                           Show help                           [boolean]
 
-- FirebaseQueue may set task timeout 5 minutes by default. If you need more longer time, say 1h, you need to set `{"timeout": 3600000, "in_progress_state": "in_progress"}` to `$queue_url/specs/default`.
+Homepage:
+  https://github.com/hiroshi/runner-worker#readme
+
+```
+
+## 🔑 Security
+
+- See [SECURITY.md]
+
+## 😔 Caveats
+
+- By default the log is kept, in order to not run out of data storage you need
+  to delete the entries.
+- It doesn't support time-outs as of yet.
+
+## 👏 Contribute
+
+Contributions that improve the stability or capability are warmly welcome.
+Make sure that your tests pass before posting a PR.
+Please post any issues you find [here](https://github.com/hiroshi/runner-worker/issues)
+
+## 🤗 Credits
+
+Proudly made by folks at [Nota Inc.](https://notainc.com/) in 🏯 Kyoto.

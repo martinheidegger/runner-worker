@@ -1,38 +1,39 @@
 #!/usr/bin/env node
+'use strict'
 
-function log (type, level) {
-  var prefix = '[' + type
-  var suffix = '] (' + level + ')'
-  return function (id, message) {
-    if (id) {
-      return prefix + '#' + id + suffix + message
-    }
-    return prefix + suffix + message
+function envOption (key, option) {
+  option.type = 'string'
+  if (!process.env[key]) {
+    option.desc += ' You can also specify the environment variable ' + key + '.'
   }
+  option.default = process.env[key] || undefined
+  return option
 }
 
-require('../lib/runner-worker.js')(process.argv.slice(2), {
-  stdio: 'pipe'
-}, function (err, proc) {
-  if (err) {
-    console.error(e.stack || e)
-    process.exit(1)
-  }
-  if (process.env.DEBUG) {
-    proc.on('debug', log(proc.type, 'debug'))
-  }
-  proc.on('info', log(proc.type, 'info'))
-  if (proc.stdout) {
-    proc.stdout.pipe(process.stdout)
-  }
-  if (proc.stderr) {
-    proc.stderr.pipe(process.stderr)
-  }
-  if (proc.stdin) {
-    process.stdin.pipe(proc.stdin)
-  }
-  proc.on('exit', function (code) {
-    process.exit(code)
+const homepage = require('../package.json').homepage
+require('yargs')
+  .usage('$0 <command>')
+  .command('create-task', 'Creates a new task for a worker to process.', require('./create-task'))
+  .command('process-tasks', 'Process tasks', require('./process-tasks'))
+  .option('env', {
+    alias: 'e',
+    type: 'array',
+    desc: 'Environment variable passed to the worker.'
   })
-
-})
+  .option('dbUrl', envOption('FIREBASE_URL', {
+    alias: ['d', 'db', 'u', 'url'],
+    demandOption: true,
+    desc: 'Firebase url that is used to store & process tasks.'
+  }))
+  .option('namespace', envOption('FIREBASE_NAMESPACE', {
+    alias: ['ns', 'prefix', 'p'],
+    desc: 'Namespace where to process and execute tasks in firebase.'
+  }))
+  .option('auth-token', envOption('FIREBASE_TOKEN', {
+    alias: ['t', 'token'],
+    desc: 'Token used to authenticate to the database.'
+  }))
+  .epilog('Homepage:\n  ' + homepage)
+  .demandCommand(1, 'No command given.')
+  .help()
+  .argv

@@ -1,5 +1,5 @@
+'use strict'
 const firebase = require('firebase')
-const tearDown = require('tap').tearDown
 
 if (!process.env.FIREBASE_URL) {
   throw new Error('environment variable FIREBASE_URL needs to point to a firebase repo with free read/write access!')
