@@ -75,7 +75,7 @@ Homepage:
 
 ## 🔑 Security
 
-- See [SECURITY.md]
+- See [SECURITY.md](./SECURITY.md)
 
 ## 😔 Caveats
 
